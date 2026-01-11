@@ -1,9 +1,9 @@
-name: ARM64-Build
-on: [workflow_dispatch] # Запуск вручную кнопкой
+name: ARM64-Ultimate-Build
+on: [workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-latest # Используем стандартный сервер
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       
@@ -16,12 +16,15 @@ jobs:
       - name: Grant execute permission
         run: chmod +x gradlew
 
-      - name: Build ARM64 Native
-        # Эта команда заставляет Gradle собрать нативки под ARM64 даже на x86 сервере
-        run: ./gradlew desktop:dist -Parc-natives="linuxarm64"
+      - name: Force Build All Natives
+        # Мы просим Gradle собрать версию со всеми вшитыми библиотеками
+        run: ./gradlew desktop:dist -PallNatives=true
+
+      - name: Check build folder
+        run: ls -R desktop/build/libs/
 
       - name: Upload result
         uses: actions/upload-artifact@v4
         with:
-          name: Mindustry-ARM64-Ready
+          name: Mindustry-Multi-Platform
           path: desktop/build/libs/*.jar
