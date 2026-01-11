@@ -1,0 +1,27 @@
+name: ARM64-Build
+on: [workflow_dispatch] # Запуск вручную кнопкой
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Используем стандартный сервер
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission
+        run: chmod +x gradlew
+
+      - name: Build ARM64 Native
+        # Эта команда заставляет Gradle собрать нативки под ARM64 даже на x86 сервере
+        run: ./gradlew desktop:dist -Parc-natives="linuxarm64"
+
+      - name: Upload result
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mindustry-ARM64-Ready
+          path: desktop/build/libs/*.jar
